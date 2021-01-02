@@ -37,6 +37,8 @@ OClock::OClock(QWidget *parent) : QWidget(parent)
 
     ring=new QPixmap(":/fancy-ring.png");
 
+    face=new QPixmap(":/clock-face.png");
+
     //qDebug()<<ring->width()<<" "<<ring->height();
 
     circle1=new HollowCircle(60,0.75f,-0.75f,0.69f,-0.69f);
@@ -54,6 +56,7 @@ void OClock::paintEvent(QPaintEvent *e)
 
     QPainter paint(this);
 
+    pen.setColor(Qt::black);
 
     paint.setPen(pen);
 
@@ -61,8 +64,12 @@ void OClock::paintEvent(QPaintEvent *e)
 
     paint.drawPixmap(QRect(0,0,this->width(),this->height()),*ring);
 
+
+
+
     paint.translate(this->width()/2,this->height()/2);
 
+    paint.drawPixmap(QRect(-this->width()*0.35,-this->height()*0.35,this->width()*0.7,this->height()*0.7),*face);
 
     paint.scale(this->width()/2,this->height()/2);
 
@@ -72,9 +79,17 @@ void OClock::paintEvent(QPaintEvent *e)
 
     circle2->drawHollowCircle(&paint,sec);
 
+    pen.setColor(Qt::gray);
+
+    paint.setPen(pen);
+
     paint.setBrush(QBrush(Qt::black));
 
     paint.drawEllipse(QPointF(0,0),0.1f,0.1f);
+
+    pen.setColor(QColor(qRgb(167,2,48)));
+
+    paint.setPen(pen);
 
     paint.setBrush(QBrush(qRgb(167,2,48)));
 

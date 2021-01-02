@@ -21,6 +21,7 @@ class OClock : public QWidget
    // QPainter *paint;
     QTimer *updater;
     QPixmap *ring;
+    QPixmap *face;
     QOpenGLPaintDevice* device;
     int sec;
     int min;

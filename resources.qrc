@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>fancy-ring.png</file>
+        <file>clock-face.png</file>
     </qresource>
 </RCC>

@@ -10,6 +10,8 @@
 #include <QTimer>
 #include <QOpenGLPaintDevice>
 #include <cmath>
+#include <hollowcircle.h>
+#include <QKeyEvent>
 
 class OClock : public QWidget
 {
@@ -20,20 +22,36 @@ class OClock : public QWidget
     QTimer *updater;
     QPixmap *ring;
     QOpenGLPaintDevice* device;
-    int angel;
+    int sec;
+    int min;
+    int hour;
     QPen pen;
+    HollowCircle *circle1;
+    HollowCircle *circle2;
+    QPointF *arrow;
+    int offset;
 
 
 public:
     explicit OClock(QWidget *parent = nullptr);
 
+    void move_up()
+    {
+        qDebug()<<sec<<" "<<min<<" "<<" "<<hour;
+    offset+=60;
+    }
+
+    void move_down()
+    {
+        qDebug()<<sec<<" "<<min<<" "<<" "<<hour;
+    offset-=60;
+    }
+
+
 protected:
 
 void paintEvent(QPaintEvent *e);
 
-void drawHollowCircle(int n_points,int o_rx,int o_ry,int i_rx,int i_ry,QPainter *p,int p_t_s=-1);
-
-void intializeHollowCircle(int n_points,int o_rx,int o_ry,int i_rx,int i_ry);
 
 signals:
 

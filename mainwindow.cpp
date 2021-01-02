@@ -13,3 +13,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_A)
+    {
+    ui->widget->move_up();
+    }
+    else if(event->key() == Qt::Key_D)
+    {
+ui->widget->move_down();
+    }
+}

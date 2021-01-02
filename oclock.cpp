@@ -3,61 +3,44 @@
 OClock::OClock(QWidget *parent) : QWidget(parent)
 {
 
-   // device=new QOpenGLPaintDevice();
+    //qDebug()<<this->width()<<" "<<this->height();
+    arrow=new QPointF[3];
 
+    arrow[0]=QPointF(0,-0.6);
+    arrow[1]=QPointF(0.01,-0.1);
+    arrow[2]=QPointF(-0.01,-0.1);
 
-    //paint=new QPainter(this);
-
-    qDebug()<<this->width()<<" "<<this->height();
-
-  //  points=new QPointF[40];
-
-
-
-
-   //points[61]=QPointF(this->width()/2,this->height()/2);
-
-    //points[0]=QPointF(this->width()/2,this->height());
-    //points[1]=QPointF(this->width(),this->height()/2);
-    //points[2]=QPointF(this->width()/2,0);
-    //points[3]=QPointF(0,0);
-
-    angel=0;
+    sec=0;
+    min=0;
+    hour=0;
+    offset=0;
 
     time=QTime::currentTime();
 
     pen.setWidth(0);
 
-   pen.setColor(QColor(qRgb(0, 57, 138)));
+    pen.setColor(Qt::black);
 
-    //pen.setStyle(Qt::NoPen);
+    sec=time.second();
+    min=time.minute();
 
+    if(time.hour()>12)
+    {
+    hour=time.hour()-12;
+    }
 
+    hour=360*(hour/12.f);
 
-    angel=-360*(time.second()/59.f);
+    hour+=30*(min/59.f);
 
     updater=new QTimer(this);
 
     ring=new QPixmap(":/fancy-ring.png");
 
-    qDebug()<<ring->width()<<" "<<ring->height();
+    //qDebug()<<ring->width()<<" "<<ring->height();
 
-  /*  for(short i=0;i<61;i++)
-    {
-    points[i]=QPointF((sin(i*a)*r),(cos(i*a)*r));
-
-    qDebug()<<i*a;
-    }
-
-    for(short i=61;i<122;i++)
-    {
-    points[i]=QPointF((sin((i-61)*a)*5),(cos((i-61)*a)*5));
-
-    qDebug()<<(i-61)*a;
-    }*/
-
-
-
+    circle1=new HollowCircle(60,0.75f,-0.75f,0.69f,-0.69f);
+    circle2=new HollowCircle(60,0.72f,-0.72f,0.69f,-0.69f);
 
     QObject::connect(updater,SIGNAL(timeout()),this,SLOT(update()));
 
@@ -65,141 +48,9 @@ OClock::OClock(QWidget *parent) : QWidget(parent)
 
 }
 
-void OClock::intializeHollowCircle(int n_points,int o_rx,int o_ry,int i_rx,int i_ry)
-{
-    QPointF* o_points;
-
-    o_points=new QPointF[n_points+1];
-
-    //float r=100;
-
-   float a=(2*M_PI)/n_points;
-
-   //qDebug()<<a;
-
-
-
-    for(short i=0;i<n_points+1;i++)
-    {
-        o_points[i]=QPointF((sin(i*a)*o_rx),(cos(i*a)*o_ry));
-    }
-
-    QPointF* i_points;
-
-    i_points=new QPointF[n_points+1];
-
-    for(short i=0;i<n_points+1;i++)
-    {
-        i_points[i]=QPointF((sin(i*(-a))*i_rx),(cos(i*(-a))*i_ry));
-    }
-}
-
-
-void OClock::drawHollowCircle(int n_points,int o_rx,int o_ry,int i_rx,int i_ry,QPainter *p,int p_t_s)
-{
-
-    if(!p_t_s)
-    {
-        return;
-    }
-
-    if(p_t_s<0)
-    {
-    p_t_s=n_points;
-    }
-
-    if(p_t_s>n_points)
-    {
-    p_t_s=n_points;
-    }
-
-    /*QPointF* points;
-
-    points=new QPointF[(n_points+1)*2];
-
-    //float r=100;
-
-   float a=(2*M_PI)/n_points;
-
-   //qDebug()<<a;
-
-
-
-    for(short i=0;i<n_points+1;i++)
-    {
-        points[i]=QPointF((sin(i*a)*o_r),(cos(i*a)*o_r));
-    }
-
-    int u=n_points+1;
-
-   for(short i=n_points;i>=0;i--)
-    {
-        points[u]=QPointF((sin(i*a)*i_r),(cos(i*a)*i_r));
-
-        u++;
-    }
-
-   p->drawPolygon(points,(n_points+1)*2);*/
-
-
-
-
-
-        QPointF* o_points;
-
-        o_points=new QPointF[n_points+1];
-
-        //float r=100;
-
-       float a=(2*M_PI)/n_points;
-
-       //qDebug()<<a;
-
-
-
-        for(short i=0;i<n_points+1;i++)
-        {
-            o_points[i]=QPointF((sin(i*a)*o_rx),(cos(i*a)*o_ry));
-        }
-
-        QPointF* i_points;
-
-        i_points=new QPointF[n_points+1];
-
-        for(short i=0;i<n_points+1;i++)
-        {
-            i_points[i]=QPointF((sin(i*(-a))*i_rx),(cos(i*(-a))*i_ry));
-        }
-
-      //  p->drawPolygon(o_points,n_points);
-
-       // p->setBrush(QBrush(qRgb(255,0,0)));
-
-       // p->drawPolygon(i_points,n_points);
-
-
-
-
-
-        QPointF* points=new QPointF[(n_points+1)*2];
-
-        memmove(points,o_points,(p_t_s+1)*sizeof(QPointF));
-
-        memmove(points+p_t_s+1,i_points+(n_points-p_t_s),(p_t_s+1)*sizeof(QPointF));
-
-       /* for(int i=0;i<(n_points+1)*2;i++)
-        {
-            qDebug()<<points[i];
-        }*/
-
-         p->drawPolygon(points,(p_t_s+1)*2);
-}
-
 void OClock::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e);
-
-    //angel=0;
 
     QPainter paint(this);
 
@@ -208,38 +59,58 @@ void OClock::paintEvent(QPaintEvent *e)
 
     paint.setBrush(QBrush(qRgb(0, 57, 138)));
 
-   // qDebug()<<ring->width()<<" "<<ring->height();
-
     paint.drawPixmap(QRect(0,0,this->width(),this->height()),*ring);
 
     paint.translate(this->width()/2,this->height()/2);
 
-    int rx=this->width()/2;
-    int ry=this->height()/2;
 
-   // paint.drawPolygon(points,40);
+    paint.scale(this->width()/2,this->height()/2);
 
-    this->drawHollowCircle(60,rx*0.75f,ry*0.75f,rx*0.5f,ry*0.5f,&paint,angel+1);
+    circle1->drawHollowCircle(&paint,min);
 
-   // paint.setBrush(QBrush(qRgb(0, 255, 0)));
+    paint.setBrush(QBrush(qRgb(167,2,48)));
 
-    //this->drawHollowCircle(60,rx*0.75f,ry*0.75f,rx*0.5f,ry*0.5f,&paint);
+    circle2->drawHollowCircle(&paint,sec);
+
+    paint.setBrush(QBrush(Qt::black));
+
+    paint.drawEllipse(QPointF(0,0),0.1f,0.1f);
+
+    paint.setBrush(QBrush(qRgb(167,2,48)));
+
+    paint.rotate(hour);
+
+    paint.drawPolygon(arrow,3);
+
+
 
 }
 
 
 void OClock::update()
 {
+   // qDebug()<<offset;
+
     time=QTime::currentTime();
 
-    angel=time.second();
+    time=time.addSecs(offset);
 
-    /*if(angel<=-360)
+    sec=time.second();
+    min=time.minute();
+
+    hour=time.hour();
+    if(hour>12)
     {
-        angel=0;
-    }*/
+    hour-=12;
+    }
+
+    hour=360*(hour/12.f);
+
+    hour+=30*(min/59.f);
 
     this->repaint();
 
 
 }
+
+

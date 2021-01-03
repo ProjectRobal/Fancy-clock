@@ -12,6 +12,7 @@
 #include <cmath>
 #include <hollowcircle.h>
 #include <QKeyEvent>
+#include <QFontDatabase>
 
 class OClock : public QWidget
 {
@@ -31,6 +32,17 @@ class OClock : public QWidget
     HollowCircle *circle2;
     QPointF *arrow;
     int offset;
+    bool pm;
+    QString digital;
+    QFont *digit;
+
+
+    enum OColor
+    {
+    Red=qRgb(0, 57, 138),
+    Blue=qRgb(167,2,48),
+    Orange=qRgb(255, 136, 25)
+    };
 
 
 public:

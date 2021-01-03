@@ -2,13 +2,20 @@
 
 OClock::OClock(QWidget *parent) : QWidget(parent)
 {
+    pm=false;
+
+    int id = QFontDatabase::addApplicationFont(":/digital-7.ttf");
+
+    digit=new QFont(QFontDatabase::applicationFontFamilies(id).at(0),24);
+
+
 
     //qDebug()<<this->width()<<" "<<this->height();
     arrow=new QPointF[3];
 
-    arrow[0]=QPointF(0,-0.6);
-    arrow[1]=QPointF(0.01,-0.1);
-    arrow[2]=QPointF(-0.01,-0.1);
+    arrow[0]=QPointF(0,-202);
+    arrow[1]=QPointF(3.4,-34);
+    arrow[2]=QPointF(-3.4,-34);
 
     sec=0;
     min=0;
@@ -27,6 +34,11 @@ OClock::OClock(QWidget *parent) : QWidget(parent)
     if(time.hour()>12)
     {
     hour=time.hour()-12;
+    pm=true;
+    }
+    else
+    {
+        pm=false;
     }
 
     hour=360*(hour/12.f);
@@ -41,8 +53,8 @@ OClock::OClock(QWidget *parent) : QWidget(parent)
 
     //qDebug()<<ring->width()<<" "<<ring->height();
 
-    circle1=new HollowCircle(60,0.75f,-0.75f,0.69f,-0.69f);
-    circle2=new HollowCircle(60,0.72f,-0.72f,0.69f,-0.69f);
+    circle1=new HollowCircle(60,253,-253,240,-240);
+    circle2=new HollowCircle(60,246,-246,240,-240);
 
     QObject::connect(updater,SIGNAL(timeout()),this,SLOT(update()));
 
@@ -52,7 +64,7 @@ OClock::OClock(QWidget *parent) : QWidget(parent)
 
 void OClock::paintEvent(QPaintEvent *e)
 {
-    Q_UNUSED(e);
+   Q_UNUSED(e);
 
     QPainter paint(this);
 
@@ -60,24 +72,79 @@ void OClock::paintEvent(QPaintEvent *e)
 
     paint.setPen(pen);
 
-    paint.setBrush(QBrush(qRgb(0, 57, 138)));
+    qDebug()<<this->width()<<" "<<this->height();
 
-    paint.drawPixmap(QRect(0,0,this->width(),this->height()),*ring);
-
-
-
+    qDebug()<<float(this->width())/676.0<<" "<<float(this->height())/676.0;
 
     paint.translate(this->width()/2,this->height()/2);
 
-    paint.drawPixmap(QRect(-this->width()*0.35,-this->height()*0.35,this->width()*0.7,this->height()*0.7),*face);
+    paint.scale(this->width()/676.0,this->height()/676.0);
 
-    paint.scale(this->width()/2,this->height()/2);
+
+
+    paint.drawPixmap(QRect(-676/2,-676/2,676,676),*ring);
+
+
+
+    paint.drawPixmap(QRect(-676*0.7/2,-676*0.7/2,676*0.7,676*0.7),*face);
+
+
+
+
+
+
+    paint.setBrush(QBrush(OColor::Orange));
+
+
+    paint.drawRoundedRect(QRectF(-40,-80,80,30),3,3);
+
+    paint.setPen(pen);
+
+   // paint.setBrush(QBrush(qRgb(0,0,0)));
+
+   paint.setFont(*digit);
+
+   paint.drawText(QRectF(-40,-80,80,30),Qt::AlignCenter, digital);
+
+
+   if(!pm){pen.setColor(QColor(OColor::Blue));}
+   else {pen.setColor(QColor(OColor::Red));}
+
+
+
+    paint.setPen(pen);
+
+   // paint.setBrush(QBrush(qRgb(0,0,0)));
+
+
+   QFont font=paint.font();
+   font.setPointSize(20);
+   paint.setFont(font);
+
+
+   if(pm){paint.drawText(QPointF(60,0), "PM");}
+   else {paint.drawText(QPointF(60,0), "AM");}
+
+
+
+
+
+   pen.setColor(Qt::black);
+
+   paint.setPen(pen);
+
+
+
+
+    paint.setBrush(QBrush(OColor::Red));
 
     circle1->drawHollowCircle(&paint,min);
 
-    paint.setBrush(QBrush(qRgb(167,2,48)));
+    paint.setBrush(QBrush(OColor::Blue));
 
     circle2->drawHollowCircle(&paint,sec);
+
+
 
     pen.setColor(Qt::gray);
 
@@ -85,13 +152,15 @@ void OClock::paintEvent(QPaintEvent *e)
 
     paint.setBrush(QBrush(Qt::black));
 
-    paint.drawEllipse(QPointF(0,0),0.1f,0.1f);
+    paint.drawEllipse(QPointF(0,0),34,34);
 
-    pen.setColor(QColor(qRgb(167,2,48)));
+
+
+    pen.setColor(QColor(OColor::Blue));
 
     paint.setPen(pen);
 
-    paint.setBrush(QBrush(qRgb(167,2,48)));
+    paint.setBrush(QBrush(OColor::Blue));
 
     paint.rotate(hour);
 
@@ -114,9 +183,26 @@ void OClock::update()
     min=time.minute();
 
     hour=time.hour();
-    if(hour>12)
+
+    digital=QString::number(hour)+":";
+
+    if(min<10)
     {
-    hour-=12;
+    digital+=("0"+QString::number(min));
+    }
+    else
+    {
+    digital+=QString::number(min);
+    }
+
+    if(time.hour()>12)
+    {
+    hour=time.hour()-12;
+    pm=true;
+    }
+    else
+    {
+        pm=false;
     }
 
     hour=360*(hour/12.f);

@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>fancy-ring.png</file>
         <file>clock-face.png</file>
+        <file>digital-7.ttf</file>
+        <file>fancy-ring.png</file>
     </qresource>
 </RCC>
